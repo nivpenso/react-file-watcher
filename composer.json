@@ -1,0 +1,24 @@
+{
+    "name": "nivpenso/react-file-watcher",
+    "description": "a file watcher package based on reactphp",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "ReactFileWatcher\\": "src/"
+        }
+    },
+    "require": {
+        "react/event-loop": "^1.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Niv Penso",
+            "email": "nivpenso@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9",
+        "pestphp/pest": "^1.0"
+    }
+}
