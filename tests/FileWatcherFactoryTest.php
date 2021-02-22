@@ -16,7 +16,7 @@ it('should return ExtUvFileWatcher when loop implementation is ExtUVLoop',functi
     expect(get_class($fileWatcher))->toBe(\ReactFileWatcher\Watchers\LibUVFileWatcher::class);
 })->group("LibUV");
 
-it('should return ExtEvFileWather when loop implementation is ExtEVLoop',function () {
+it('should return ExtEvFileWatcher when loop implementation is ExtEVLoop',function () {
     $loop = new ExtEvLoop();
     $fileWatcher = FileWatcherFactory::create($loop);
     expect(get_class($fileWatcher))->toBe(\ReactFileWatcher\Watchers\LibEVFileWatcher::class);
