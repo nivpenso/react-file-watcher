@@ -3,7 +3,6 @@
 use React\EventLoop\LoopInterface;
 use React\EventLoop\ExtEventLoop;
 use React\EventLoop\ExtLibeventLoop;
-use React\EventLoop\ExtLibevLoop;
 use React\EventLoop\ExtEvLoop;
 use \React\EventLoop\ExtUvLoop;
 use React\EventLoop\StreamSelectLoop;
@@ -32,7 +31,7 @@ it('should throw exception of file watcher not implemented',function ($loopType)
     $loop = $this->getMockBuilder($loopType)->getMock();
     /** @noinspection PhpParamsInspection */
     FileWatcherFactory::create($loop);
-})->with([StreamSelectLoop::class, ExtLibevLoop::class, ExtLibeventLoop::class,ExtEventLoop::class])->throws(FileWatcherLoopNotSupported::class)->group("StreamSelect");
+})->with([StreamSelectLoop::class, ExtLibeventLoop::class,ExtEventLoop::class])->throws(FileWatcherLoopNotSupported::class)->group("StreamSelect");
 
 it('should throw FileWatcherLoopNotSupported when loop implementation is type of unknown LoopInterface',function () {
     $loop = $this->getMockBuilder(LoopInterface::class)->getMock();

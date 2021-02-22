@@ -6,7 +6,6 @@ namespace ReactFileWatcher;
 use React\EventLoop\ExtEventLoop;
 use React\EventLoop\ExtEvLoop;
 use React\EventLoop\ExtLibeventLoop;
-use React\EventLoop\ExtLibevLoop;
 use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\StreamSelectLoop;
@@ -25,7 +24,6 @@ class FileWatcherFactory
                 return new LibUVFileWatcher($loop);
             case ExtEvLoop::class:
                 return new LibEVFileWatcher($loop);
-            case ExtLibevLoop::class:
             case ExtLibeventLoop::class:
             case ExtEventLoop::class:
             case StreamSelectLoop::class:
