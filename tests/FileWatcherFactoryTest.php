@@ -27,12 +27,15 @@ it('should return ExtEvFileWatcher when loop implementation is ExtEVLoop',functi
 // TODO: need to add into the require-dev of the composer all the ext-packages to allow this test to run.
 it('should throw exception of file watcher not implemented',function ($loopType) {
     // phpunit doesn't allow creating a mock of a "final" class.  using uopz to remove the "final" keyword from the type.
+    /** @noinspection PhpUndefinedFunctionInspection */
     uopz_flags($loopType, null, 0);
     $loop = $this->getMockBuilder($loopType)->getMock();
+    /** @noinspection PhpParamsInspection */
     FileWatcherFactory::create($loop);
 })->with([StreamSelectLoop::class, ExtLibevLoop::class, ExtLibeventLoop::class,ExtEventLoop::class])->throws(FileWatcherLoopNotSupported::class)->group("StreamSelect");
 
 it('should throw FileWatcherLoopNotSupported when loop implementation is type of unknown LoopInterface',function () {
     $loop = $this->getMockBuilder(LoopInterface::class)->getMock();
+    /** @noinspection PhpParamsInspection */
     FileWatcherFactory::create($loop);
 })->throws(FileWatcherLoopNotSupported::class);
