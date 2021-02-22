@@ -19,6 +19,10 @@
     ],
     "require-dev": {
         "phpunit/phpunit": "^9",
-        "pestphp/pest": "^1.0"
+        "pestphp/pest": "^1.0",
+        "ext-uv": "*",
+        "ext-ev": "*",
+        "ext-libevent": "*",
+        "ext-event": "*"
     }
 }

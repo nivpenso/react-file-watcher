@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa6539838bf1ac24b4a0f66a389a1694",
+    "content-hash": "560f9b9814b5fcc176b7c413165ecc60",
     "packages": [
         {
             "name": "react/event-loop",
@@ -3532,6 +3532,11 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-uv": "*",
+        "ext-ev": "*",
+        "ext-libevent": "*",
+        "ext-event": "*"
+    },
     "plugin-api-version": "2.0.0"
 }
