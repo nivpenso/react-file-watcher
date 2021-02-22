@@ -2,6 +2,7 @@
 
 namespace ReactFileWatcher\Watchers;
 
+use React\EventLoop\ExtEvLoop;
 use React\EventLoop\ExtLibevLoop;
 use React\EventLoop\LoopInterface;
 use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
@@ -12,11 +13,9 @@ class LibEVFileWatcher extends AbstractFileWatcher
     public function __construct(LoopInterface $loop)
     {
         parent::__construct($loop);
-        if (get_class($this->loop) !== ExtLibevLoop::class) {
+        if (get_class($this->loop) !== ExtEvLoop::class) {
             throw new WrongLoopImplementation();
         }
-
-        throw new FileWatcherLoopNotSupported();
     }
 
     public function Watch(array $pathsToWatch, \Closure $closure)
