@@ -30,10 +30,6 @@ abstract class AbstractFileWatcher implements FileWatcherInterface
     }
 
     protected function isFilenameHasSuffix($filename, $suffix) : bool {
-        return $this->endsWith($filename, $suffix);
-    }
-
-    private function endsWith($haystack, $needle): bool {
-        return substr_compare($haystack, $needle, -strlen($needle)) === 0;
+        return substr_compare($filename, $suffix, -strlen($suffix)) === 0;
     }
 }
