@@ -2,7 +2,6 @@
 
 namespace ReactFileWatcher\Watchers;
 
-use Closure;
 use \React\EventLoop\LoopInterface;
 use ReactFileWatcher\FileWatcherInterface;
 use ReactFileWatcher\PathObjects\PathWatcher;
@@ -16,9 +15,9 @@ abstract class AbstractFileWatcher implements FileWatcherInterface
         $this->loop = $loop;
     }
 
-    public abstract function Watch(array $pathsToWatch, Closure $closure);
+    public abstract function Watch(array $pathsToWatch, $closure);
 
-    protected function onChangeDetected(string $changedFileName, PathWatcher $pathWatcher, Closure $closure): void {
+    protected function onChangeDetected(string $changedFileName, PathWatcher $pathWatcher, $closure): void {
         $suffixesToExclude = $pathWatcher->getSuffixToExclude();
         foreach ($suffixesToExclude as $suffix) {
             if ($this->isFilenameHasSuffix($changedFileName, $suffix)) {

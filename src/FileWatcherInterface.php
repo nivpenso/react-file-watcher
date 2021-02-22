@@ -4,5 +4,5 @@ namespace ReactFileWatcher;
 
 interface FileWatcherInterface
 {
-    function Watch(array $pathsToWatch, \Closure $closure);
+    function Watch(array $pathsToWatch, $closure);
 }

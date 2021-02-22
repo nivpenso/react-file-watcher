@@ -2,7 +2,6 @@
 
 namespace ReactFileWatcher\Watchers;
 
-use Closure;
 use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
 use ReactFileWatcher\Exceptions\WrongLoopImplementation;
@@ -21,7 +20,7 @@ class LibUVFileWatcher extends AbstractFileWatcher
         $this->loopHandle = $this->loop->getUvLoop();
     }
 
-    public function Watch(array $pathsToWatch, Closure $closure)
+    public function Watch(array $pathsToWatch, $closure)
     {
         return array_map(function(PathWatcher $path) use ($closure) {
             // TODO: set recursive watcher
