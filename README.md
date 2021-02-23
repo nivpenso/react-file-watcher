@@ -27,11 +27,11 @@ composer require nivpenso/react-file-watcher
 #### code snippet
 ```php
 use React\EventLoop\Factory;
-use \ReactFileWatcher\FileWatcherFactory;
-use \ReactFileWatcher\PathObjects\PathWatcher;
+use ReactFileWatcher\FileWatcherFactory;
+use ReactFileWatcher\PathObjects\PathWatcher;
 
 // create path to watch in the file system
-$pathToWatch = new PathWatcher('/tmp', 1);
+$pathToWatch = new PathWatcher("/tmp/", 1, []);
 
 // creating the loop using ReactPHP.
 $loop = Factory::create();
@@ -40,21 +40,24 @@ $loop = Factory::create();
 $fileWatcher = FileWatcherFactory::create($loop);
 
 // call the watch and execute the callback when detecting change event.
-$fileWatcher->Watch([$pathToWatch], function() {
-    print "file has changed";
+$fsevent = $fileWatcher->Watch([$pathToWatch], function($filename) {
+    var_dump($filename);
+    print PHP_EOL;
 });
 ```
 
 ### Demo
 This package comes with a demo that can be used. feel free to run it
-#### Running the demo on local
-In case you are using linux and have one of the supported extensions installed on your machine you can run it using the following commands.
+#### Running the demo on local (Linux)
+1. make sure one of the supported libraries is installed on your environment (suggested: `ext-uv`)
+2. run the following commands
 ```
-# run the 
+# install dependecies
 composer install --no-dev
+# run the demo
 php ./demo/test.php
 ```
-After the process started you can start playing with files under the path to watch (default: `/tmp`) and see the messages in the terminal.  
+After the process started you can start changing files under the path to watch (default: `/tmp`) and see the messages in the terminal.  
 #### Running the demo on Docker
 In case you don't have a linux machine ready you can use Docker to test it.
 **Docker file will be provided in the future**
