@@ -12,7 +12,7 @@ class LibEVFileWatcher extends AbstractFileWatcher
     public function __construct(LoopInterface $loop)
     {
         parent::__construct($loop);
-        if (get_class($this->loop) !== ExtEvLoop::class) {
+        if (!($this->loop instanceof ExtEvLoop)) {
             throw new WrongLoopImplementation();
         }
     }

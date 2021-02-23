@@ -14,7 +14,7 @@ class LibUVFileWatcher extends AbstractFileWatcher
     public function __construct(LoopInterface $loop)
     {
         parent::__construct($loop);
-        if (get_class($this->loop) !== ExtUvLoop::class) {
+        if (!($this->loop instanceof ExtUvLoop)) {
             throw new WrongLoopImplementation();
         }
         $this->loopHandle = $this->loop->getUvLoop();
