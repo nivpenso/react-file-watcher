@@ -3,6 +3,7 @@
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
 use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
+use ReactFileWatcher\Exceptions\RecursiveWatchNotImplemented;
 use ReactFileWatcher\FileWatcherFactory;
 use ReactFileWatcher\PathObjects\PathWatcher;
 use ReactFileWatcher\Watchers\LibUVFileWatcher;
@@ -24,6 +25,23 @@ beforeEach(function() {
     recursiveRemoveDirectory(TEMP_DIR);
     mkdir(TEMP_DIR);
 });
+
+it("should throw exception for recursive path watcher", function() {
+    // prepare file with first content.
+    $tempFileName = "1";
+    $tempFilePath = TEMP_DIR. "/$tempFileName";
+    file_put_contents($tempFilePath, "first insert");
+
+    // prepare the event loop, the watcher and the path to watch
+    $loop = new ExtUvLoop();
+    $watcher = FileWatcherFactory::create($loop);
+    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
+    $pathWatcher = new PathWatcher($tempFilePath, true, []);
+
+    // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
+    $fsEvents = $watcher->Watch([$pathWatcher], function() {});
+
+})->throws(RecursiveWatchNotImplemented::class);
 
 it ("should invoke closure when file has modified", function() {
     // prepare file with first content.
