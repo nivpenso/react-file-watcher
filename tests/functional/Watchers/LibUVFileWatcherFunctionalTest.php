@@ -36,7 +36,7 @@ it("should throw exception for recursive path watcher", function() {
     $loop = new ExtUvLoop();
     $watcher = FileWatcherFactory::create($loop);
     expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
-    $pathWatcher = new PathWatcher($tempFilePath, true, []);
+    $pathWatcher = new PathWatcher(TEMP_DIR, true, []);
 
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
     $fsEvents = $watcher->Watch([$pathWatcher], function() {});

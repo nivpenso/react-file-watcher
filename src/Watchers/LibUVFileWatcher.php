@@ -24,14 +24,16 @@ class LibUVFileWatcher extends AbstractFileWatcher
     public function Watch(array $pathsToWatch, $closure)
     {
         return array_map(function(PathWatcher $path) use ($closure) {
-            if ($path->isRecursiveWatch()) {
+            if ($path->isRecursiveWatch() && is_dir($path->getPathToWatch())) {
                 throw new RecursiveWatchNotImplemented();
                 // TODO: implement recursive watch
             }
-            // LibUV::uv_fs_event_init flags are not supported
-            return uv_fs_event_init($this->loopHandle, $path->getPathToWatch(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
-                $this->onChangeDetected($fileName, $path, $closure);
-            });
+            else {
+                // LibUV::uv_fs_event_init flags are not supported
+                return uv_fs_event_init($this->loopHandle, $path->getPathToWatch(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
+                    $this->onChangeDetected($fileName, $path, $closure);
+                });
+            }
         },  $pathsToWatch);
     }
 }
