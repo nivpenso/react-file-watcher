@@ -1,0 +1,26 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  test-php7.4-libuv:
+    docker:
+      # Specify the version you desire here
+      - image: circleci/php:7.4-cli
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run: 
+          name: Install PHP dependencies 
+          command: |
+            sudo docker-php-ext-install pcntl
+      - run: 
+          name: Install packages using composer
+          command: | 
+            composer install
+      - run:
+          name: Run tests
+          command: |
+            php ./vendor/bin/pest
+
