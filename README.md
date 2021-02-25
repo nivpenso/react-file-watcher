@@ -63,17 +63,10 @@ In case you don't have a linux machine ready you can use Docker to test it.
 **Docker file will be provided in the future**
 
 ### Testing
-This package comes with tests in it. It uses the amazing package, [PEST](https://github.com/pestphp/pest). We suggest you to run the test with PEST, but you can also run in it with PHPUnit.
+This package comes with tests in it. It uses the amazing package, [PEST](https://github.com/pestphp/pest). You can either run the tests on local or use the provided docker file that already contains the installation of `ev`, `uv`, `libevent`, `event` extensions.
 
-_**please note**_ - to run all tests out of the box you will have to install all the extensions on your environment. In case, you want to test only specific extension please execute a specific test-group.
 #### running with pest
 ```
 composer install
 ./vendor/bin/pest
 ```
-#### running with phpunit
-```
-composer install
-./vendor/bin/phpunit
-```
-
