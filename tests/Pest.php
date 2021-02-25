@@ -61,3 +61,16 @@ function callMethod($object, string $method , array $parameters = [])
 
     return $method->invokeArgs($object, $parameters);
 }
+
+function recursiveRemoveDirectory($directory)
+{
+    foreach(glob("{$directory}/*") as $file)
+    {
+        if(is_dir($file)) {
+            recursiveRemoveDirectory($file);
+        } else {
+            unlink($file);
+        }
+    }
+    rmdir($directory);
+}
