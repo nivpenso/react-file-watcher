@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  test-php7.4-libuv:
+  test-php7.4:
     docker:
       # Specify the version you desire here
       - image: circleci/php:7.4-cli
@@ -65,4 +65,4 @@ workflows:
   version: 2
   test:
     jobs:
-      - test-php7.4-libuv
+      - test-php7.4
