@@ -15,6 +15,7 @@ jobs:
           name: Install LibUV
           command: |
             sudo apt-get update && sudo apt-get install -y libuv1-dev
+            sudo pecl install channel://pecl.php.net/uv-0.2.4
 
       - run: 
           name: Install packages using composer
