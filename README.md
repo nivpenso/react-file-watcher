@@ -61,14 +61,29 @@ php ./demo/test.php
 ```
 After the process started you can start changing files under the path to watch (default: `/tmp`) and see the messages in the terminal.  
 #### Running the demo on Docker
-In case you don't have a linux machine ready you can use Docker to test it.
-**Docker file will be provided in the future**
-
+In case you don't have a linux machine ready, or an environment set up you can use Docker to test it.  
+```
+# In terminal A run this
+docker-compose -f ./demo/docker-compose.yaml up
+```
+make a change inside the tmp folder of the container to see the change detection
+```
+# In terminal B run this
+docker ps # to get the container-id
+docker exec -it <container-id> /bin/bash
+echo "change" > /tmp/1
+```
+On the first terminal you should see the process detect the change.
 ### Testing
-This package comes with tests in it. It uses the amazing package, [PEST](https://github.com/pestphp/pest). You can either run the tests on local or use the provided docker file that already contains the installation of `ev`, `uv`, `libevent`, `event` extensions.
+This package comes with tests in it. It uses the amazing package, [PEST](https://github.com/pestphp/pest). You can either run the tests on local or use the provided docker file that already contains a ready to use environment with all the required extensions (`ev`, `uv`, `libevent`, `event`).
 
-#### running with pest
+#### running with PEST on local
 ```
 composer install
 ./vendor/bin/pest
+```
+
+#### using docker to run tests
+```
+docker-compose -f ./tests/docker-compose.yaml up
 ```
