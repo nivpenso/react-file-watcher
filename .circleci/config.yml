@@ -16,8 +16,8 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y libuv1-dev
             sudo pecl install channel://pecl.php.net/uv-0.2.4
-            ls /usr/local/etc/php
-            sudo echo "extension=uv.so" > /usr/local/etc/php/conf.d/libuv.ini
+            sudo docker-php-ext-enable uv
+            php -i | grep uv
 
       - run: 
           name: Install packages using composer
