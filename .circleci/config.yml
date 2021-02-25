@@ -24,3 +24,8 @@ jobs:
           command: |
             php ./vendor/bin/pest
 
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-php7.4-libuv
