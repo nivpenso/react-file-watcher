@@ -26,11 +26,26 @@ beforeEach(function() {
     mkdir(TEMP_DIR);
 });
 
-it("should throw exception for recursive path watcher", function() {
+afterAll(function() {
+    // make sure that /tmp/react-watcher-tests dir is empty
+    recursiveRemoveDirectory(TEMP_DIR);
+});
+
+it ("should watch for changes on recursive path watch", function() {
     // prepare file with first content.
-    $tempFileName = "1";
-    $tempFilePath = TEMP_DIR. "/$tempFileName";
-    file_put_contents($tempFilePath, "first insert");
+    $tempFirstFileName = "1";
+    $tempFirstFilePath = TEMP_DIR. "/$tempFirstFileName";
+    file_put_contents($tempFirstFilePath, "first file: first insert");
+
+    $newDir = "newDir";
+    mkdir(TEMP_DIR."/$newDir");
+    $tempSecondFileName = "newdir-1";
+    $tempSecondFilePath = TEMP_DIR . "/$newDir/$tempSecondFileName";
+    file_put_contents($tempSecondFilePath, "second file: first insert");
+
+    $tempThirdFileName = "newdir-2";
+    $tempThirdFilePath = TEMP_DIR . "/$newDir/$tempThirdFileName";
+    file_put_contents($tempThirdFilePath, "third file: first insert");
 
     // prepare the event loop, the watcher and the path to watch
     $loop = new ExtUvLoop();
@@ -38,10 +53,29 @@ it("should throw exception for recursive path watcher", function() {
     expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
     $pathWatcher = new PathWatcher(TEMP_DIR, true, []);
 
-    // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
-    $fsEvents = $watcher->Watch([$pathWatcher], function() {});
+    // prepare a "mock" callback that will check that it has been fired exactly 3 times for file changed events
+    $bothFileNames = [$tempFirstFileName, $tempSecondFileName, $tempThirdFileName];
+    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(3), $loop, function($filename) use ($bothFileNames) {
+        // the name of the changed file provided in the callback arg is right.
+        expect($bothFileNames)->toContain($filename);
+    });
 
-})->throws(RecursiveWatchNotImplemented::class);
+    // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
+    $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
+    // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
+    $loop->addTimer(1, function() use ($loop){
+        $loop->stop();
+    });
+
+    // set a future callback to be called right after the loop starts - this is used to write something to the filesystem after the loop starts.
+    $loop->futureTick(function () use ($loop, $tempFirstFilePath, $tempSecondFilePath, $tempThirdFilePath) {
+        file_put_contents($tempFirstFilePath, "first file: second insert");
+        file_put_contents($tempSecondFilePath, "second file: second insert");
+        file_put_contents($tempThirdFilePath, "third file: second insert");
+    });
+
+    $loop->run();
+});
 
 it ("should invoke closure when file has modified", function() {
     // prepare file with first content.

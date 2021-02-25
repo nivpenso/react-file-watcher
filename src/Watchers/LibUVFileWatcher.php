@@ -24,16 +24,36 @@ class LibUVFileWatcher extends AbstractFileWatcher
     public function Watch(array $pathsToWatch, $closure)
     {
         return array_map(function(PathWatcher $path) use ($closure) {
+            $eventHandlesArr = [];
+            // LibUV::uv_fs_event_init flags are not supported
+            $eventHandle = uv_fs_event_init($this->loopHandle, $path->getPathToWatch(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
+                $this->onChangeDetected($fileName, $path, $closure);
+            });
+            array_push($eventHandlesArr, $eventHandle);
+
             if ($path->isRecursiveWatch() && is_dir($path->getPathToWatch())) {
-                throw new RecursiveWatchNotImplemented();
-                // TODO: implement recursive watch
-            }
-            else {
-                // LibUV::uv_fs_event_init flags are not supported
-                return uv_fs_event_init($this->loopHandle, $path->getPathToWatch(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
-                    $this->onChangeDetected($fileName, $path, $closure);
+                $directory = new \RecursiveDirectoryIterator($path->getPathToWatch());
+                $dirFilter = new \RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) {
+                    // Skip hidden files and directories.
+                    if ($current->getFilename()[0] === '.') {
+                        return false;
+                    }
+                    if ($current->isDir()) {
+                        // Only recurse into intended subdirectories.
+                        return true;
+                    }
+                    return false;
                 });
+                $iterator = new \RecursiveIteratorIterator($dirFilter, \RecursiveIteratorIterator::SELF_FIRST);
+                foreach ($iterator as $info) {
+                    // LibUV::uv_fs_event_init flags are not supported
+                    $eventHandle =  uv_fs_event_init($this->loopHandle, $info->getPathname(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
+                        $this->onChangeDetected($fileName, $path, $closure);
+                    });
+                    array_push($eventHandlesArr, $eventHandle);
+                }
             }
+            return $eventHandlesArr;
         },  $pathsToWatch);
     }
 }
