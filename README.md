@@ -1,5 +1,7 @@
 # ReactPHP File Watcher
 
+[![react-watcher-php](https://circleci.com/gh/nivpenso/react-file-watcher.svg?style=svg)](https://app.circleci.com/pipelines/github/nivpenso/react-file-watcher)
+
 ### About
 This package is based on [reactphp/event-loop](https://github.com/reactphp/event-loop) and provides an easy-to-use interface to set filesystem watchers and detect changes.
 
