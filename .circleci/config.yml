@@ -11,18 +11,51 @@ jobs:
     working_directory: ~/project
     steps:
       - checkout
+      - run:
+          name: Install FS packages
+          command: |
+            sudo apt-get update && sudo apt-get install -y libuv1-dev libevent-dev libssl-dev
+
       - run: 
           name: Install LibUV
           command: |
-            sudo apt-get update && sudo apt-get install -y libuv1-dev
             sudo pecl install channel://pecl.php.net/uv-0.2.4
             sudo docker-php-ext-enable uv
             php -i | grep uv
+
+      - run:
+          name: Install Ev
+          command: |
+            sudo pecl install ev
+            sudo docker-php-ext-enable ev
+            php -i | grep ev
+
+      - run:
+          name: Install event
+          command: |
+            sudo docker-php-ext-install sockets
+            sudo pecl install event
+            sudo docker-php-ext-enable event
+            php -i | grep event
+
+      - run:
+          name: Install LibEvent
+          command: |
+            mkdir ~/lib
+            cd ~/lib
+            sudo git clone https://github.com/expressif/pecl-event-libevent.git
+            cd pecl-event-libevent
+            sudo phpize
+            sudo ./configure
+            sudo make
+            sudo make install
+            sudo docker-php-ext-enable libevent
 
       - run: 
           name: Install packages using composer
           command: | 
             composer install
+
       - run:
           name: Run tests
           command: |
