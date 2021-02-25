@@ -58,6 +58,37 @@ it ("should invoke closure when file has modified", function() {
     $loop->run();
 });
 
+it ("should not invoke closure when file has modified but is part of the ignore suffix list", function() {
+    // prepare file with first content.
+    $tempFileName = "1.txt";
+    $tempFilePath = TEMP_DIR. "/$tempFileName";
+    file_put_contents($tempFilePath, "first insert");
+
+    // prepare the event loop, the watcher and the path to watch
+    $loop = new ExtUvLoop();
+    $watcher = FileWatcherFactory::create($loop);
+    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
+    $pathWatcher = new PathWatcher(TEMP_DIR, false, ["txt"]);
+
+    // prepare a "mock" callback that check that it will never be called.
+    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->never(), $loop, function($filename) {
+    });
+
+    // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
+    $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
+    // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
+    $loop->addTimer(1, function() use ($loop){
+        $loop->stop();
+    });
+
+    // set a future callback to be called right after the loop starts - this is used to write something to the filesystem after the loop starts.
+    $loop->futureTick(function () use ($tempFilePath) {
+        file_put_contents($tempFilePath, "second insert");
+    });
+
+    $loop->run();
+});
+
 it ("should invoke closure twice when 2 files were modified for the same PathWatcher", function() {
     // prepare files with first content.
     $firstTempFileName = "1";
