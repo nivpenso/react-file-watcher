@@ -12,9 +12,10 @@ jobs:
     steps:
       - checkout
       - run: 
-          name: Install PHP dependencies 
+          name: Install LibUV
           command: |
-            sudo docker-php-ext-install pcntl
+            pecl install channel://pecl.php.net/uv-0.2.4
+
       - run: 
           name: Install packages using composer
           command: | 
