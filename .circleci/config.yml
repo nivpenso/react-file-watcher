@@ -16,6 +16,7 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y libuv1-dev
             sudo pecl install channel://pecl.php.net/uv-0.2.4
+            php -i | grep "/etc/php"
             sudo echo "extension=uv.so" > /etc/php/7.4/mods-available/libuv.ini
             sudo -s /etc/php/7.4/mods-available/libev.ini /etc/php/7.4/cli/conf.d/20-libev.ini
 
