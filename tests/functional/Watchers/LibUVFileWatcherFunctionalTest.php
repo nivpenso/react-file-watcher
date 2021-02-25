@@ -55,7 +55,7 @@ it ("should watch for changes on recursive path watch", function() {
 
     // prepare a "mock" callback that will check that it has been fired exactly 3 times for file changed events
     $bothFileNames = [$tempFirstFileName, $tempSecondFileName, $tempThirdFileName];
-    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(4), $loop, function($filename) use ($bothFileNames) {
+    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(3), $loop, function($filename) use ($bothFileNames) {
         // the name of the changed file provided in the callback arg is right.
         expect($bothFileNames)->toContain($filename);
     });
