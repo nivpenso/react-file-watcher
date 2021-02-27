@@ -7,7 +7,7 @@ use React\EventLoop\LoopInterface;
 use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
 use ReactFileWatcher\Exceptions\WrongLoopImplementation;
 
-class LibEVFileWatcher extends AbstractFileWatcher
+class EVFileWatcher extends AbstractFileWatcher
 {
     public function __construct(LoopInterface $loop)
     {
