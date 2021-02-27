@@ -7,7 +7,7 @@ use \ReactFileWatcher\FileWatcherFactory;
 use \ReactFileWatcher\PathObjects\PathWatcher;
 
 // create path to watch in the file system
-$pathToWatchArr = [new PathWatcher('/tmp/', 1, ['txt'])];
+$pathToWatchArr = [new PathWatcher('/tmp/', true, ['txt'])];
 
 // creating the loop using ReactPHP.
 $loop = Factory::create();

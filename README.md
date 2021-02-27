@@ -33,7 +33,7 @@ use ReactFileWatcher\FileWatcherFactory;
 use ReactFileWatcher\PathObjects\PathWatcher;
 
 // create path to watch in the file system
-$pathToWatch = new PathWatcher("/tmp/", 1, []);
+$pathToWatch = new PathWatcher("/tmp/", true);
 
 // creating the loop using ReactPHP.
 $loop = Factory::create();
