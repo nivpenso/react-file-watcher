@@ -156,7 +156,7 @@ it ("should invoke closure twice when 2 files were modified for the same PathWat
 
     // prepare a "mock" callback that will check that it has been fired exactly 2 times for file changed events
     $bothFileNames = [$firstTempFileName, $secondTempFileName];
-    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(3), $loop, function($filename) use ($bothFileNames) {
+    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(2), $loop, function($filename) use ($bothFileNames) {
         // the name of the changed file provided in the callback arg is right.
         expect($bothFileNames)->toContain($filename);
     });
