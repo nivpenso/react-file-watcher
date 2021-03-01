@@ -1,8 +1,6 @@
 <?php
 
-use React\EventLoop\ExtEvLoop;
 use React\EventLoop\LoopInterface;
-use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
 use ReactFileWatcher\Exceptions\WrongLoopImplementation;
 use ReactFileWatcher\Watchers\EVFileWatcher;
 
