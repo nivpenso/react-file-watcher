@@ -24,6 +24,9 @@
 |
 */
 
+use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
+use React\EventLoop\LoopInterface;
+
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
@@ -74,3 +77,18 @@ function recursiveRemoveDirectory($directory)
     }
     rmdir($directory);
 }
+
+function createStopLoopCallbackAfterFileChanged($that, InvocationOrder $invocationOrder , LoopInterface $loop, $conditionToCheck) {
+    $shouldBeCalled = $that->getMockBuilder(stdClass::class)
+        ->setMethods(['__invoke'])
+        ->getMock();
+
+    $shouldBeCalled->expects($invocationOrder)
+        ->method('__invoke')->will($that->returnCallback(function($filename) use ($loop, $conditionToCheck) {
+            $conditionToCheck($filename);
+            $loop->stop();
+        }));
+    return $shouldBeCalled;
+}
+
+const TEMP_DIR = "/tmp/react-watcher-tests";

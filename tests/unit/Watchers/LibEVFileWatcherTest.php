@@ -11,9 +11,3 @@ it('should throw WrongLoopImplementation exception when loop is not instance of 
     $fileWatcher = new EVFileWatcher($loop);
     $fileWatcher->Watch([],function() {});
 })->throws(WrongLoopImplementation::class);
-
-it('should throw FileWatcherLoopNotSupported exception when calling watch', function() {
-    $loop = $this->getMockBuilder(ExtEvLoop::class)->disableOriginalConstructor()->getMock();
-    $fileWatcher = new EVFileWatcher($loop);
-    $fileWatcher->Watch([],function() {});
-})->throws(FileWatcherLoopNotSupported::class);
