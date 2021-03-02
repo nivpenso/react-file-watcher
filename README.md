@@ -10,13 +10,13 @@ This package is based on [reactphp/event-loop](https://github.com/reactphp/event
 The package is utilizing the abstraction of react-php to create an efficient file-watcher using the underlying platform package that is installed on the environment
 
 ### Support
-| Extension     | Status        | Will be supported?  |
-| ------------- |:-------------:| -----:|
+| Extension     | Status        |
+| ------------- |:-------------:| 
 | ext-uv        | Supported 
 | ext-ev        | Supported     
-| ext-libevent  | Not Supported | Yes |
-| ext-event     | Not Supported | Yes |
-| ext-libev     | Not Supported | No  |
+| ext-libevent  | Supported (using in default watcher)
+| ext-event     | Supported (using in default watcher)
+| ext-libev     | Supported (using in default watcher)
 
 
 ### How to install
