@@ -13,8 +13,8 @@ The package is utilizing the abstraction of react-php to create an efficient fil
 | Extension     | Status        | Will be supported?  |
 | ------------- |:-------------:| -----:|
 | ext-uv        | Supported 
+| ext-ev        | Supported     
 | ext-libevent  | Not Supported | Yes |
-| ext-ev        | Not Supported | Yes |
 | ext-event     | Not Supported | Yes |
 | ext-libev     | Not Supported | No  |
 
