@@ -6,7 +6,7 @@ use \React\EventLoop\ExtUvLoop;
 use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
 use ReactFileWatcher\FileWatcherFactory;
 use ReactFileWatcher\Watchers\LibUVFileWatcher;
-use ReactFileWatcher\Watchers\LibEVFileWatcher;
+use ReactFileWatcher\Watchers\EVFileWatcher;
 
 it('should return ExtUvFileWatcher when loop implementation is ExtUVLoop',function () {
     $loop = new ExtUvLoop();
@@ -17,7 +17,7 @@ it('should return ExtUvFileWatcher when loop implementation is ExtUVLoop',functi
 it('should return ExtEvFileWatcher when loop implementation is ExtEVLoop',function () {
     $loop = new ExtEvLoop();
     $fileWatcher = FileWatcherFactory::create($loop);
-    expect(get_class($fileWatcher))->toBe(LibEVFileWatcher::class);
+    expect(get_class($fileWatcher))->toBe(EVFileWatcher::class);
 })->group("LibUV");
 
 it('should throw exception of file watcher not implemented when recieve not implemented LoopInterface type',function () {

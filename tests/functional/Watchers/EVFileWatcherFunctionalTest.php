@@ -1,8 +1,10 @@
 <?php
 
+use React\EventLoop\ExtEvLoop;
 use React\EventLoop\ExtUvLoop;
 use ReactFileWatcher\FileWatcherFactory;
 use ReactFileWatcher\PathObjects\PathWatcher;
+use ReactFileWatcher\Watchers\EVFileWatcher;
 use ReactFileWatcher\Watchers\LibUVFileWatcher;
 use function PHPUnit\Framework\MockObject\MockBuilder;
 
@@ -43,13 +45,13 @@ it ("should watch for changes on recursive path watch", function() {
     file_put_contents($tempThirdFilePath, "third file: first insert");
 
     // prepare the event loop, the watcher and the path to watch
-    $loop = new ExtUvLoop();
+    $loop = new ExtEvLoop();
     $watcher = FileWatcherFactory::create($loop);
-    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
+    expect(get_class($watcher))->toBe(EVFileWatcher::class);
     $pathWatcher = new PathWatcher(TEMP_DIR, true, []);
 
     // prepare a "mock" callback that will check that it has been fired exactly 3 times for file changed events
-    $bothFileNames = [$tempFirstFileName, $tempSecondFileName, $tempThirdFileName];
+    $bothFileNames = [$tempFirstFilePath, $tempSecondFilePath, $tempThirdFilePath];
     $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(3), $loop, function($filename) use ($bothFileNames) {
         // the name of the changed file provided in the callback arg is right.
         expect($bothFileNames)->toContain($filename);
@@ -79,15 +81,15 @@ it ("should invoke closure when file has modified", function() {
     file_put_contents($tempFilePath, "first insert");
 
     // prepare the event loop, the watcher and the path to watch
-    $loop = new ExtUvLoop();
+    $loop = new ExtEvLoop();
     $watcher = FileWatcherFactory::create($loop);
-    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
+    expect(get_class($watcher))->toBe(EVFileWatcher::class);
     $pathWatcher = new PathWatcher($tempFilePath, false, []);
 
     // prepare a "mock" callback that will check that it has been fired one time on event of file change.
-    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->once(), $loop, function($filename) use ($tempFileName) {
+    $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->once(), $loop, function($filename) use ($tempFilePath) {
         // the name of the changed file provided in the callback arg is right.
-        expect($filename)->toBe($tempFileName);
+        expect($filename)->toBe($tempFilePath);
     });
 
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
@@ -112,10 +114,10 @@ it ("should not invoke closure when file has modified but is part of the ignore 
     file_put_contents($tempFilePath, "first insert");
 
     // prepare the event loop, the watcher and the path to watch
-    $loop = new ExtUvLoop();
+    $loop = new ExtEvLoop();
     $watcher = FileWatcherFactory::create($loop);
-    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
-    $pathWatcher = new PathWatcher(TEMP_DIR, false, ["txt"]);
+    expect(get_class($watcher))->toBe(EVFileWatcher::class);
+    $pathWatcher = new PathWatcher($tempFilePath, false, ["txt"]);
 
     // prepare a "mock" callback that check that it will never be called.
     $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->never(), $loop, function($filename) {
@@ -136,28 +138,31 @@ it ("should not invoke closure when file has modified but is part of the ignore 
     $loop->run();
 });
 
-it ("should invoke closure twice when 2 files were modified for the same PathWatcher", function() {
+it ("should invoke closure twice when 2 files were modified for the 2 different PathWatchers", function() {
     // prepare files with first content.
     $firstTempFileName = "1";
     $secondTempFileName = "2";
-    file_put_contents(TEMP_DIR."/$firstTempFileName", "first file: first insert");
-    file_put_contents(TEMP_DIR."/$secondTempFileName", "second file: first insert");
+    $firstTempPath = TEMP_DIR."/$firstTempFileName";
+    $secondTempPath = TEMP_DIR."/$secondTempFileName";
+    file_put_contents($firstTempPath, "first file: first insert");
+    file_put_contents($secondTempPath, "second file: first insert");
 
     // prepare the event loop, the watcher and the path to watch
-    $loop = new ExtUvLoop();
+    $loop = new ExtEvLoop();
     $watcher = FileWatcherFactory::create($loop);
-    expect(get_class($watcher))->toBe(LibUVFileWatcher::class);
-    $pathWatcher = new PathWatcher(TEMP_DIR, false, []);
+    expect(get_class($watcher))->toBe(EVFileWatcher::class);
+    $pathWatcher1 = new PathWatcher($firstTempPath, false, []);
+    $pathWatcher2 = new PathWatcher($secondTempPath, false, []);
 
     // prepare a "mock" callback that will check that it has been fired exactly 2 times for file changed events
-    $bothFileNames = [$firstTempFileName, $secondTempFileName];
+    $bothFileNames = [TEMP_DIR."/$firstTempFileName", TEMP_DIR."/$secondTempFileName"];
     $shouldBeCalled = createStopLoopCallbackAfterFileChanged($this, $this->exactly(2), $loop, function($filename) use ($bothFileNames) {
         // the name of the changed file provided in the callback arg is right.
         expect($bothFileNames)->toContain($filename);
     });
 
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
-    $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
+    $fsEvents = $watcher->Watch([$pathWatcher1, $pathWatcher2], $shouldBeCalled);
     // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
     $loop->addTimer(1, function() use ($loop){
         $loop->stop();
