@@ -24,5 +24,8 @@
         "ext-ev": "*",
         "ext-libevent": "*",
         "ext-event": "*"
+    },
+    "archive": {
+        "exclude": ["demo", ".circleci", "tests", ".gitignore", "Dockerfile", "phpunit.xml"]
     }
 }
