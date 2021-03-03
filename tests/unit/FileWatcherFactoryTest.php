@@ -1,10 +1,15 @@
 <?php
 
+use React\EventLoop\ExtEventLoop;
+use React\EventLoop\ExtLibeventLoop;
+use React\EventLoop\ExtLibevLoop;
 use React\EventLoop\LoopInterface;
 use React\EventLoop\ExtEvLoop;
 use \React\EventLoop\ExtUvLoop;
+use React\EventLoop\StreamSelectLoop;
 use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
 use ReactFileWatcher\FileWatcherFactory;
+use ReactFileWatcher\Watchers\DefaultFileWatcher;
 use ReactFileWatcher\Watchers\LibUVFileWatcher;
 use ReactFileWatcher\Watchers\EVFileWatcher;
 
@@ -18,16 +23,9 @@ it('should return ExtEvFileWatcher when loop implementation is ExtEVLoop',functi
     $loop = new ExtEvLoop();
     $fileWatcher = FileWatcherFactory::create($loop);
     expect(get_class($fileWatcher))->toBe(EVFileWatcher::class);
-})->group("LibUV");
+})->group("LibEV");
 
-it('should throw exception of file watcher not implemented when recieve not implemented LoopInterface type',function () {
-    $loop = $this->getMockBuilder(LoopInterface::class)->getMock();
-    /** @noinspection PhpParamsInspection */
-    FileWatcherFactory::create($loop);
-})->throws(FileWatcherLoopNotSupported::class);
-
-it('should throw FileWatcherLoopNotSupported when loop implementation is type of unknown LoopInterface',function () {
-    $loop = $this->getMockBuilder(LoopInterface::class)->getMock();
-    /** @noinspection PhpParamsInspection */
-    FileWatcherFactory::create($loop);
-})->throws(FileWatcherLoopNotSupported::class);
+it('should return DefaultFileWatcher when no specific watcher implementation for the type of the loop implementation',function (LoopInterface $loop) {
+    $fileWatcher = FileWatcherFactory::create($loop);
+    expect(get_class($fileWatcher))->toBe(DefaultFileWatcher::class);
+})->with([new ExtEventLoop(), new ExtLibeventLoop(), new StreamSelectLoop()]);
