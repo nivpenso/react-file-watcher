@@ -8,7 +8,8 @@
         }
     },
     "require": {
-        "react/event-loop": "^1.1"
+        "react/event-loop": "^1.1",
+        "yosymfony/resource-watcher": "^3.0"
     },
     "license": "MIT",
     "authors": [
