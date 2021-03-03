@@ -4,9 +4,9 @@ namespace ReactFileWatcher\Watchers;
 
 use React\EventLoop\ExtEvLoop;
 use React\EventLoop\LoopInterface;
-use ReactFileWatcher\Exceptions\FileWatcherLoopNotSupported;
 use ReactFileWatcher\Exceptions\WrongLoopImplementation;
 use ReactFileWatcher\PathObjects\PathWatcher;
+use ReactFileWatcher\Utils\UtilsFunctions;
 
 class EVFileWatcher extends AbstractFileWatcher
 {
@@ -38,7 +38,8 @@ class EVFileWatcher extends AbstractFileWatcher
                 $filesAndDirs = scandir($path->getPathToWatch());
                 $onlyFiles = array_filter($filesAndDirs, function ($item) { return !is_dir($item); } );
                 return array_map(function($file) use ($path, $closure)  {
-                    return $this->setWatcherOnFile($file, $path, $closure);
+                    $filePath = UtilsFunctions::PathsJoin($path->getPathToWatch(), $file);
+                    return $this->setWatcherOnFile($filePath, $path, $closure);
                 }, $onlyFiles);
             }
 
