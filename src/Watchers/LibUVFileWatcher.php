@@ -4,9 +4,9 @@ namespace ReactFileWatcher\Watchers;
 
 use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
-use ReactFileWatcher\Exceptions\RecursiveWatchNotImplemented;
 use ReactFileWatcher\Exceptions\WrongLoopImplementation;
 use ReactFileWatcher\PathObjects\PathWatcher;
+use ReactFileWatcher\Utils\UtilsFunctions;
 use function uv_fs_event_init;
 
 class LibUVFileWatcher extends AbstractFileWatcher
@@ -26,11 +26,8 @@ class LibUVFileWatcher extends AbstractFileWatcher
         return array_map(function(PathWatcher $path) use ($closure) {
             $eventHandlesArr = [];
             // LibUV::uv_fs_event_init flags are not supported
-            $eventHandle = uv_fs_event_init($this->loopHandle, $path->getPathToWatch(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
-                $this->onChangeDetected($fileName, $path, $closure);
-            });
+            $eventHandle = $this->setUvWatcher($path->getPathToWatch(), $path, $closure);
             array_push($eventHandlesArr, $eventHandle);
-
             if ($path->isRecursiveWatch() && is_dir($path->getPathToWatch())) {
                 $directory = new \RecursiveDirectoryIterator($path->getPathToWatch());
                 $dirFilter = new \RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) {
@@ -47,13 +44,23 @@ class LibUVFileWatcher extends AbstractFileWatcher
                 $iterator = new \RecursiveIteratorIterator($dirFilter, \RecursiveIteratorIterator::SELF_FIRST);
                 foreach ($iterator as $info) {
                     // LibUV::uv_fs_event_init flags are not supported
-                    $eventHandle =  uv_fs_event_init($this->loopHandle, $info->getPathname(), function($eventResource, $fileName, $event, $status) use ($path, $closure) {
-                        $this->onChangeDetected($fileName, $path, $closure);
-                    });
+                    $eventHandle = $this->setUvWatcher($info->getPathname(), $path, $closure);
                     array_push($eventHandlesArr, $eventHandle);
                 }
             }
             return $eventHandlesArr;
         },  $pathsToWatch);
+    }
+
+    protected function setUvWatcher(string $pathToWatch, PathWatcher $pathWatcher, $closure) {
+        return uv_fs_event_init($this->loopHandle, $pathToWatch, function($eventResource, $fileName, $event, $status) use ($pathToWatch, $pathWatcher, $closure) {
+            if (is_dir($pathToWatch)) {
+                $fileName = UtilsFunctions::PathsJoin($pathToWatch, $fileName);
+            }
+            else {
+                $fileName = $pathToWatch;
+            }
+            $this->onChangeDetected($fileName, $pathWatcher, $closure);
+        });
     }
 }
