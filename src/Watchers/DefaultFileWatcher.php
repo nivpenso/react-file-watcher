@@ -14,30 +14,56 @@ use Yosymfony\ResourceWatcher\ResourceWatcher;
 class DefaultFileWatcher extends AbstractFileWatcher
 {
     protected int $timerInterval;
+    protected array $resourceWatchersToPathWatcher;
+    protected $closure;
 
     public function __construct(LoopInterface $loop, int $timerInterval=3)
     {
         parent::__construct($loop);
         $this->timerInterval = $timerInterval;
+        $this->closure = function() {
+            // on initialization doing nothing.
+        };
+        $this->resourceWatchersToPathWatcher = [];
+        $this->loop->addTimer($this->getTimerInterval(), [$this, 'onTimerTick']);
+    }
+
+    public function onTimerTick() {
+        foreach ($this->resourceWatchersToPathWatcher as $map) {
+            $changes = $map['watcher']->findChanges();
+            if ($changes->hasChanges()) {
+                foreach ($changes->getUpdatedFiles() as $updatedFile) {
+                    $this->onChangeDetected($updatedFile, $map['pathWatcher'], $this->closure);
+                }
+                foreach ($changes->getDeletedFiles() as $deletedFile) {
+                    $this->onChangeDetected($deletedFile, $map['pathWatcher'], $this->closure);
+                }
+                foreach ($changes->getNewFiles() as $newFile) {
+                    $this->onChangeDetected($newFile, $map['pathWatcher'], $this->closure);
+                }
+            }
+        }
+        $this->loop->addTimer($this->timerInterval, [$this, 'onTimerTick']);
     }
 
     public function Watch(array $pathsToWatch, $closure)
     {
+        $this->closure = $closure;
         array_map(function (PathWatcher $pathToWatch) use ($closure) {
             $watcher = new ResourceWatcher(new ResourceCacheMemory(), $this->convertPathWatcherToFinder($pathToWatch), new Crc32ContentHash());
-            $this->loop->addTimer($this->getTimerInterval(), function() use ($pathToWatch, $closure, $watcher){
-                $changes = $watcher->findChanges();
-                if ($changes->hasChanges()) {
-                    // TODO: pass to the closure the files that were changed.
-                    $closure();
-                }
-            });
+            $watcher->initialize();
+            $this->resourceWatchersToPathWatcher[] = ["watcher"=>$watcher, "pathWatcher" => $pathToWatch];
         }, $pathsToWatch);
-        // TODO: Implement Watch() method.
     }
 
-    protected function convertPathWatcherToFinder(PathWatcher $pathWatcher) : Finder{
-        throw new \Exception("not implemented");
+    protected function convertPathWatcherToFinder(PathWatcher $pathWatcher) : Finder {
+        $finder = Finder::create();
+        $dirPart = str_replace("\\", "/" , $pathWatcher->getDirPart());
+        $finder->in($dirPart);
+        if ($pathWatcher->isFile()) {
+            $finder->name($pathWatcher->getFilenamePart());
+        }
+        return $finder;
     }
 
     /**
