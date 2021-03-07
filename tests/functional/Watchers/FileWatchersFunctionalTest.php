@@ -1,11 +1,13 @@
 <?php
 
+use React\EventLoop\ExtEventLoop;
 use React\EventLoop\ExtEvLoop;
+use React\EventLoop\ExtLibeventLoop;
 use React\EventLoop\ExtUvLoop;
 use React\EventLoop\LoopInterface;
+use React\EventLoop\StreamSelectLoop;
 use ReactFileWatcher\FileWatcherFactory;
 use ReactFileWatcher\PathObjects\PathWatcher;
-use ReactFileWatcher\Watchers\LibUVFileWatcher;
 use function PHPUnit\Framework\MockObject\MockBuilder;
 
 beforeEach(function() {
@@ -58,7 +60,7 @@ it("should watch for changes on recursive path watch", function(LoopInterface $l
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
     $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
     // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
-    $loop->addTimer(1, function() use ($loop){
+    $loop->addTimer(5, function() use ($loop){
         $loop->stop();
     });
 
@@ -70,7 +72,7 @@ it("should watch for changes on recursive path watch", function(LoopInterface $l
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 it("should invoke closure when file has modified", function(LoopInterface $loop) {
     // prepare file with first content.
@@ -91,7 +93,7 @@ it("should invoke closure when file has modified", function(LoopInterface $loop)
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
     $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
     // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
-    $loop->addTimer(1, function() use ($loop){
+    $loop->addTimer(5, function() use ($loop){
         $loop->stop();
     });
 
@@ -101,7 +103,7 @@ it("should invoke closure when file has modified", function(LoopInterface $loop)
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 it("should not invoke closure when file has modified but is part of the ignore suffix list", function(LoopInterface $loop) {
     // prepare file with first content.
@@ -130,7 +132,7 @@ it("should not invoke closure when file has modified but is part of the ignore s
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 it("should invoke closure twice when 2 files were modified for the same PathWatcher", function(LoopInterface $loop) {
     // prepare files with first content.
@@ -155,7 +157,7 @@ it("should invoke closure twice when 2 files were modified for the same PathWatc
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
     $fsEvents = $watcher->Watch([$pathWatcher], $shouldBeCalled);
     // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
-    $loop->addTimer(1, function() use ($loop){
+    $loop->addTimer(5, function() use ($loop){
         $loop->stop();
     });
 
@@ -166,7 +168,7 @@ it("should invoke closure twice when 2 files were modified for the same PathWatc
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 it("should not invoke closure when path has not change", function(LoopInterface $loop) {
     // prepare files with first content.
@@ -196,7 +198,7 @@ it("should not invoke closure when path has not change", function(LoopInterface 
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 it("should invoke closure twice when 2 files were modified for the 2 different PathWatchers", function(LoopInterface $loop) {
     // prepare files with first content.
@@ -222,7 +224,7 @@ it("should invoke closure twice when 2 files were modified for the 2 different P
     // set the watcher to watch the path. the unused variable $fsEvents is critical because without it the watcher won't work.
     $fsEvents = $watcher->Watch([$pathWatcher1, $pathWatcher2], $shouldBeCalled);
     // add a timer that will keep the loop running until the loop is stopped manually or until a timeout (interval)
-    $loop->addTimer(1, function() use ($loop){
+    $loop->addTimer(5, function() use ($loop){
         $loop->stop();
     });
 
@@ -233,6 +235,6 @@ it("should invoke closure twice when 2 files were modified for the 2 different P
     });
 
     $loop->run();
-})->with([new ExtUvLoop(), new ExtEvLoop()]);
+})->with([new ExtUvLoop(), new ExtEvLoop(), new StreamSelectLoop(), new ExtEventLoop(), new ExtLibeventLoop()]);
 
 // TODO: test the functionality of the watch
