@@ -57,11 +57,9 @@ jobs:
             composer install
 
       - run:
-          name: Run tests
+          name: Run tests and generate code coverage
           command: |
-            php ./vendor/bin/pest --coverage-clover ./coverage.xml
-            ls
-            cat ./coverage.xml
+            php -d xdebug.mode=coverage ./vendor/bin/pest --coverage-clover coverage.xml
 
       - run:
           name: Upload coverage report to codecov.io
