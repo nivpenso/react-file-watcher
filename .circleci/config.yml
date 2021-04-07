@@ -59,7 +59,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            php ./vendor/bin/pest --coverage-clover coverage.xml
+            php ./vendor/bin/pest --coverage-clover ./coverage.xml
+            ls
+            cat ./coverage.xml
 
       - run:
           name: Upload coverage report to codecov.io
